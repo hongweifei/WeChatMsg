@@ -19,7 +19,6 @@ server
 *.txt
 *.ui
 *.pyc
-*.bat
 *.log
 *.spec
 test*
