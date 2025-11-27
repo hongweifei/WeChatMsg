@@ -23,3 +23,6 @@ server
 *.spec
 test*
 wordcloud.html
+
+# uv
+uv.lock

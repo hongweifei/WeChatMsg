@@ -1,0 +1,198 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "WeChatMsg"
+version = "1.0.0"
+description = "留痕 - 专业的微信聊天记录解析和导出工具"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9,<3.13"
+authors = [
+    {name = "WeChatMsg Contributors"},
+]
+keywords = ["wechat", "chat", "export", "analysis", "parser"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Chat",
+    "Topic :: Database",
+    "Topic :: Utilities",
+]
+
+dependencies = [
+    # Windows系统相关依赖
+    "pywin32==308",              # Windows API访问，用于读取微信进程内存
+    "psutil~=6.1.1",             # 系统进程信息获取，用于查找微信进程
+    "pymem==1.14.0",             # 内存操作，用于从微信进程读取解密密钥
+
+    # 数据解密和压缩
+    "zstandard~=0.23.0",         # Zstd压缩算法，微信4.0数据库压缩
+    "lz4~=4.3.3",                # LZ4压缩算法，数据解压
+    "protobuf==4.25.1",          # Protocol Buffers，微信数据序列化
+
+    # 加密和安全
+    "pycryptodome~=3.21.0",     # 新版加密库，提供Crypto模块
+    "cryptography~=44.0.0",     # 现代加密库，支持各种加密算法
+
+    # 图像和文档处理
+    "pillow==11.0.0",            # 图像处理库，用于图片解码和处理
+    "openpyxl==3.1.5",           # Excel文件读写，用于导出xlsx格式
+    "python-docx==1.2.0",        # Word文档处理，用于导出docx格式
+
+    # 网络和数据解析
+    "requests~=2.32.3",          # HTTP请求库，网络相关功能
+    "xmltodict~=0.14.2",         # XML转换工具，处理XML格式数据
+    "beautifulsoup4~=4.12.3",    # HTML/XML解析器，网页内容提取
+    "lxml~=5.3.1",               # 高性能XML解析器
+    "soupsieve==2.5",            # CSS选择器库，配合BeautifulSoup使用
+
+    # 异步和日期处理
+    "aiofiles~=24.1.0",          # 异步文件操作，提升文件处理性能
+    "dateparser~=1.2.1",         # 日期解析库，智能识别各种日期格式
+
+    # 音频处理
+    "pysilk-mod==1.6.4",         # SILK音频格式处理，微信语音消息解码
+
+    # 工具库
+    "typing_extensions~=4.12.2",  # 类型注解扩展，兼容旧版Python
+    "yara-python",               # YARA规则引擎，用于内存模式匹配
+    "google==3.0.0",             # Google相关库依赖
+]
+
+[project.optional-dependencies]
+# 开发工具集
+dev = [
+    "pytest>=7.0",              # 测试框架
+    "pytest-cov",               # 测试覆盖率工具
+    "black",                    # Python代码格式化工具
+    "isort",                    # 导入语句排序工具
+    "flake8",                   # 代码检查工具
+    "mypy",                     # 静态类型检查工具
+]
+
+# AI功能集
+ai = [
+    "fastapi",                  # 现代Web框架，用于AI API服务
+    "uvicorn",                  # ASGI服务器，运行FastAPI应用
+    "torch",                    # PyTorch深度学习框架
+    "transformers",             # HuggingFace Transformers模型库
+    "numpy",                    # 数值计算库
+    "pandas",                   # 数据分析库
+]
+
+[project.urls]
+"Homepage" = "https://github.com/try0309/WeChatMsg"
+"Repository" = "https://github.com/try0309/WeChatMsg.git"
+"Issues" = "https://github.com/try0309/WeChatMsg/issues"
+
+[project.scripts]
+# 命令行工具入口点
+wechat-decrypt = "example.decrypt:main"      # 微信数据库解密命令
+wechat-export = "example.exporter:main"      # 微信聊天记录导出命令
+
+[tool.hatch.build.targets.wheel]
+packages = ["wxManager", "exporter", "example", "MemoAI"]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 88
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pymem.*",
+    "yara.*",
+    "zstandard.*",
+    "lz4.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = [
+    "tests",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["wxManager", "exporter"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "example/*",
+    "MemoAI/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
+
+[tool.uv]
+# Python版本偏好：允许下载所需Python版本
+python-preference = "managed"
+# 依赖解析策略：最高版本兼容
+resolution = "highest"

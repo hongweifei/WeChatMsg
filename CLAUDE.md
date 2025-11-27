@@ -15,15 +15,40 @@
 
 ### 依赖安装
 
-#### 方法一: 传统 pip 方式
+#### 方法一: 使用 uv (推荐)
+```bash
+# 安装uv (如果尚未安装)
+pip install uv
+
+# 同步项目依赖
+uv sync
+
+# 启动GUI
+uv run python gui/run_gui.py
+```
+
+#### 方法二: 传统 pip 方式
 ```bash
 pip install -r requirements.txt
 ```
 
-**注意**: 项目目前暂未完全支持UV依赖管理，请使用传统的pip方式安装依赖。
+**注意**: 推荐使用uv进行依赖管理，它提供更快的安装速度和更好的依赖解析。uv会自动创建和管理虚拟环境。
 
 ### 核心运行流程
 
+#### 使用 uv 运行 (推荐)
+```bash
+# 1. 解密数据库
+uv run python example/1-decrypt.py
+
+# 2. 查看联系人
+uv run python example/2-contact.py
+
+# 3. 导出聊天记录
+uv run python example/3-exporter.py
+```
+
+#### 传统方式运行
 ```bash
 # 1. 解密数据库
 python example/1-decrypt.py
@@ -270,6 +295,12 @@ logger.debug("调试日志")
 - **Python 3.10+**: 完全支持，推荐使用
 - **Python 3.9**: 基本支持 (最低支持版本)
 - **Python 3.8及以下**: 不支持
+
+### uv 工具支持
+- **uv版本**: 0.7.3+
+- **Python管理**: uv可以自动管理Python版本
+- **虚拟环境**: 自动创建和管理项目虚拟环境
+- **依赖解析**: 快速、准确的依赖解析和锁定
 
 ### 关键依赖版本要求
 - `pywin32==308`: Windows平台必需，用于进程内存读取
